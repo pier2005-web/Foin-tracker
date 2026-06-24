@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr-CA">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#12351f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Foin Tracker">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="style.css">
+<title>Foin Tracker</title>
+</head>
+<body>
+<main class="app">
+<header><h1>🚜 Foin Tracker</h1><button id="themeBtn">🌙</button></header>
+<p id="dateLabel" class="date"></p>
+<section class="stats">
+<div><span>Voyages</span><b id="tripCount">0</b></div>
+<div><span>Balles</span><b id="baleTotal">0</b></div>
+<div><span>Moyenne</span><b id="avgTime">0 min</b></div>
+<div><span>Temps total</span><b id="totalTime">0 min</b></div>
+</section>
+<section id="activeTrip" class="active hidden">
+<p>Voyage en cours</p><b id="elapsed">00:00</b><small id="startedAt"></small>
+</section>
+<button id="mainBtn" class="main start">🚜 DÉPART</button>
+<section id="balePicker" class="picker hidden">
+<h2>Combien de balles?</h2>
+<div id="baleGrid" class="grid"></div>
+<button id="cancelArrival" class="secondary">Annuler</button>
+</section>
+<section class="actions">
+<button id="undoBtn">↩️ Annuler dernier voyage</button>
+<button id="newDayBtn">🗑️ Nouvelle journée</button>
+<button id="exportBtn">📤 Export CSV</button>
+</section>
+<section class="history"><h2>Historique du jour</h2><div id="historyList"></div></section>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
