@@ -1,42 +1,19 @@
-<!DOCTYPE html>
-<html lang="fr-CA">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#12351f">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Foin Tracker">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
-<link rel="stylesheet" href="style.css">
-<title>Foin Tracker</title>
-</head>
-<body>
-<main class="app">
-<header><h1>🚜 Foin Tracker</h1><button id="themeBtn">🌙</button></header>
-<p id="dateLabel" class="date"></p>
-<section class="stats">
-<div><span>Voyages</span><b id="tripCount">0</b></div>
-<div><span>Balles</span><b id="baleTotal">0</b></div>
-<div><span>Moyenne</span><b id="avgTime">0 min</b></div>
-<div><span>Temps total</span><b id="totalTime">0 min</b></div>
-</section>
-<section id="activeTrip" class="active hidden">
-<p>Voyage en cours</p><b id="elapsed">00:00</b><small id="startedAt"></small>
-</section>
-<button id="mainBtn" class="main start">🚜 DÉPART</button>
-<section id="balePicker" class="picker hidden">
-<h2>Combien de balles?</h2>
-<div id="baleGrid" class="grid"></div>
-<button id="cancelArrival" class="secondary">Annuler</button>
-</section>
-<section class="actions">
-<button id="undoBtn">↩️ Annuler dernier voyage</button>
-<button id="newDayBtn">🗑️ Nouvelle journée</button>
-<button id="exportBtn">📤 Export CSV</button>
-</section>
-<section class="history"><h2>Historique du jour</h2><div id="historyList"></div></section>
-</main>
-<script src="app.js"></script>
-</body>
-</html>
+<!doctype html><html lang="fr-CA"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Foin Tracker</title><style>
+body{font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif;background:#eef5ea;color:#0b2414;margin:0}.app{max-width:760px;margin:auto;padding:16px}header{background:#0b3a1e;color:white;border-radius:20px;padding:18px;margin-bottom:14px}h1{font-size:34px;margin:0}.panel,.card{background:white;border-radius:22px;padding:18px;margin-bottom:14px;border:1px solid #d9e3d5}.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card span{display:block;color:#657366;font-size:19px}.card b{font-size:42px}.main{width:100%;border:0;border-radius:24px;padding:34px 8px;margin:10px 0 16px;color:white;font-size:42px;font-weight:900;background:#17843b}.arrive{background:#ba2b2b}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.grid button{border:0;border-radius:18px;padding:22px 0;font-size:30px;font-weight:900;background:#17843b;color:white}button,input{font:inherit}input{width:100%;font-size:24px;padding:16px;border-radius:16px;border:1px solid #d9e3d5}.actions button,.fieldBtns button,.secondary{width:100%;border:1px solid #d9e3d5;background:white;color:#0b2414;border-radius:18px;padding:18px;font-size:22px;margin-top:10px}.fieldBtns .primary{background:#17843b;color:white;border:0}.fieldBtns .finish{background:#ba2b2b;color:white;border:0}.fieldBtns .blue{background:#2563eb;color:white;border:0}.hidden{display:none!important}.item{border-bottom:1px solid #d9e3d5;padding:13px 0}.item small{display:block;color:#657366}.badge{background:#e3f3e7;padding:8px 12px;border-radius:999px;font-weight:800;display:inline-block;margin:4px 0}</style></head><body><main class="app">
+<header><h1>🚜 Foin Tracker</h1></header><div id=dateLabel></div>
+<section class=panel><h2>📍 Parcelle</h2><div id=fieldIdle><input id=fieldName placeholder="Nom de la parcelle / champ"><div class=fieldBtns><button class=primary id=startFieldBtn>Commencer parcelle</button></div></div><div id=fieldActive class=hidden><div>Parcelle en cours :</div><div class=badge id=activeFieldName></div><div id=fieldStats></div><div class=fieldBtns><button class=blue id=assignOldBtn>Associer voyages sans parcelle</button><button class=finish id=finishFieldBtn>Terminer parcelle</button></div></div></section>
+<section class=stats><div class=card><span>Voyages</span><b id=tripCount>0</b></div><div class=card><span>Balles</span><b id=baleTotal>0</b></div><div class=card><span>Moyenne</span><b id=avgTime>0 min</b></div><div class=card><span>Temps total</span><b id=totalTime>0 min</b></div></section>
+<section id=activeTrip class="panel hidden"><p>Voyage en cours</p><b id=elapsed>00:00</b><small id=startedAt></small></section><button id=mainBtn class=main>🚜 DÉPART</button>
+<section id=balePicker class="panel hidden"><h2>Combien de balles?</h2><div id=baleGrid class=grid></div><button id=cancelArrival class=secondary>Annuler</button></section>
+<section class="panel actions"><button id=undoBtn>↩️ Annuler dernier voyage</button><button id=newDayBtn>🗑️ Nouvelle journée</button><button id=exportBtn>📤 Export CSV</button></section>
+<section class=panel><h2>Historique du jour</h2><div id=historyList></div></section><section class=panel><h2>Parcelles terminées</h2><div id=finishedFields></div></section></main><script>
+const $=id=>document.getElementById(id),todayKey=()=>new Date().toISOString().slice(0,10);let state=JSON.parse(localStorage.getItem("foinTrackerField")||"{}");
+function save(){localStorage.setItem("foinTrackerField",JSON.stringify(state))}
+function migrateOld(){if(state.migrated)return;const old=JSON.parse(localStorage.getItem("foinTrackerSolo")||"null");if(old&&old.days){if(!state.days)state.days={};Object.keys(old.days).forEach(k=>{let ot=Array.isArray(old.days[k])?old.days[k]:[];if(!state.days[k])state.days[k]={trips:[],fields:[]};ot.forEach(t=>{if(!state.days[k].trips.some(x=>x.start===t.start&&x.end===t.end))state.days[k].trips.push({start:t.start,end:t.end,bales:t.bales,fieldId:null,fieldName:""})})})}state.migrated=true;save()}
+if(!state.days)state.days={};if(!state.current)state.current=null;if(!state.activeField)state.activeField=null;migrateOld();
+function day(){let k=todayKey();if(!state.days[k])state.days[k]={trips:[],fields:[]};return state.days[k]}function trips(){return day().trips}function fields(){return day().fields}function time(x){return new Date(x).toLocaleTimeString("fr-CA",{hour:"2-digit",minute:"2-digit"})}function dur(ms){let m=Math.round(ms/60000);return m<60?m+" min":Math.floor(m/60)+" h "+String(m%60).padStart(2,"0")}function fieldTotals(){if(!state.activeField)return{v:0,b:0,ms:0};let l=trips().filter(t=>t.fieldId===state.activeField.id);return{v:l.length,b:l.reduce((s,t)=>s+t.bales,0),ms:l.reduce((s,t)=>s+(t.end-t.start),0)}}function unassigned(){return trips().filter(t=>!t.fieldId).length}
+function render(){dateLabel.textContent=new Date().toLocaleDateString("fr-CA",{weekday:"long",day:"numeric",month:"long"});let l=trips(),tb=l.reduce((s,t)=>s+t.bales,0),tm=l.reduce((s,t)=>s+(t.end-t.start),0);tripCount.textContent=l.length;baleTotal.textContent=tb;avgTime.textContent=l.length?dur(tm/l.length):"0 min";totalTime.textContent=tm?dur(tm):"0 min";mainBtn.textContent=state.current?"🏁 ARRIVÉE":"🚜 DÉPART";mainBtn.className=state.current?"main arrive":"main";activeTrip.classList.toggle("hidden",!state.current);if(state.current)startedAt.textContent="Départ à "+time(state.current.start);fieldIdle.classList.toggle("hidden",!!state.activeField);fieldActive.classList.toggle("hidden",!state.activeField);if(state.activeField){activeFieldName.textContent=state.activeField.name;let f=fieldTotals();fieldStats.innerHTML=`<p>Voyages : <b>${f.v}</b></p><p>Balles : <b>${f.b}</b></p><p>Temps : <b>${f.ms?dur(f.ms):"0 min"}</b></p><p>Voyages sans parcelle : <b>${unassigned()}</b></p>`}historyList.innerHTML=l.length?"":"<p>Aucun voyage enregistré aujourd’hui.</p>";[...l].reverse().forEach((t,i)=>historyList.innerHTML+=`<div class=item><b>Voyage ${l.length-i} — ${t.bales} balles</b><small>${time(t.start)} → ${time(t.end)} • ${dur(t.end-t.start)}${t.fieldName?" • "+t.fieldName:" • sans parcelle"}</small></div>`);finishedFields.innerHTML=fields().length?"":"<p>Aucune parcelle terminée aujourd’hui.</p>";[...fields()].reverse().forEach(f=>finishedFields.innerHTML+=`<div class=item><b>${f.name} — ${f.bales} balles</b><small>${f.trips} voyages • ${dur(f.ms)} • ${time(f.start)} → ${time(f.end)}</small></div>`)}
+function tick(){if(state.current){let s=Math.floor((Date.now()-state.current.start)/1000);elapsed.textContent=String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}}setInterval(tick,1000)
+startFieldBtn.onclick=()=>{let name=fieldName.value.trim();if(!name)return alert("Entre le nom de la parcelle.");state.activeField={id:Date.now(),name,start:Date.now()};fieldName.value="";save();render()};assignOldBtn.onclick=()=>{if(!state.activeField)return;let u=unassigned();if(!u)return alert("Aucun voyage sans parcelle.");if(confirm("Associer "+u+" voyage(s) à "+state.activeField.name+"?")){trips().forEach(t=>{if(!t.fieldId){t.fieldId=state.activeField.id;t.fieldName=state.activeField.name}});save();render()}};finishFieldBtn.onclick=()=>{let f=fieldTotals();fields().push({name:state.activeField.name,start:state.activeField.start,end:Date.now(),trips:f.v,bales:f.b,ms:f.ms});state.activeField=null;save();render()}
+mainBtn.onclick=()=>{if(!state.current){state.current={start:Date.now(),fieldId:state.activeField?state.activeField.id:null,fieldName:state.activeField?state.activeField.name:""};save();render();tick()}else balePicker.classList.remove("hidden")};cancelArrival.onclick=()=>balePicker.classList.add("hidden");for(let i=1;i<=20;i++){let b=document.createElement("button");b.textContent=i;b.onclick=()=>{trips().push({start:state.current.start,end:Date.now(),bales:i,fieldId:state.current.fieldId,fieldName:state.current.fieldName});state.current=null;balePicker.classList.add("hidden");save();render()};baleGrid.appendChild(b)}undoBtn.onclick=()=>{let l=trips();if(l.length&&confirm("Annuler le dernier voyage?")){l.pop();save();render()}};newDayBtn.onclick=()=>{if(confirm("Effacer la journée?")){state.days[todayKey()]={trips:[],fields:[]};state.current=null;state.activeField=null;save();render()}};exportBtn.onclick=()=>alert("Export conservé dans l’historique; fonction CSV à remettre si besoin.");render();tick()
+</script></body></html>
